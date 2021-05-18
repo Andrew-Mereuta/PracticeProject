@@ -28,12 +28,34 @@ public class RegisterController {
 
     @GetMapping
     public String indexScene(Model model) {
-        model.addAttribute("user", new User());
+        //model.addAttribute("user", new User());
         return "registerPage";
     }
 
+//    @PostMapping
+//    public String formSubmission(@ModelAttribute("user") @Valid User user) throws UserAlreadyExistsException {
+//        user = userService.registerNewUser(user);
+//
+//        SimpleMailMessage msg = new SimpleMailMessage();
+//        msg.setFrom("andrewapple03@gmail.com");
+//        msg.setTo(user.getEmail());
+//        msg.setSubject("Spring Message");
+//        msg.setText("http://localhost:8080/api/link/" + user.getId());
+//
+//        javaMailSender.send(msg);
+//
+//        return "redirect:personalPage/" + user.getId();
+//    }
     @PostMapping
-    public String formSubmission(@ModelAttribute("user") @Valid User user) throws UserAlreadyExistsException {
+    public String formSubmission(@RequestParam String username,
+                                 @RequestParam String password,
+                                 @RequestParam Integer age,
+                                 @RequestParam String email) throws UserAlreadyExistsException {
+        User user = new User();
+        user.setUsername(username);
+        user.setAge(age);
+        user.setPassword(password);
+        user.setEmail(email);
         user = userService.registerNewUser(user);
 
         SimpleMailMessage msg = new SimpleMailMessage();

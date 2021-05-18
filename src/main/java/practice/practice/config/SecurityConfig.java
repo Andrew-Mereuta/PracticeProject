@@ -7,6 +7,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,6 +35,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Override
+    public void configure(WebSecurity web) throws Exception {
+        web
+                .ignoring()
+                .antMatchers("/h2-console/**");
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -46,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**", "GET")).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**", "POST")).permitAll()
                     .antMatchers( "/api/link/**").permitAll()
+                    .antMatchers("/error").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -54,14 +63,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .logout()
                     .logoutUrl("/logout")
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
                     .clearAuthentication(true)
                     .invalidateHttpSession(true)
                     .deleteCookies("JSESSIONID", "Idea-af40f3da", "remember-me", "XSRF-TOKEN")
                     .logoutSuccessUrl("/login");
-//                    .permitAll();
-//                    .loginPage("/login").permitAll()
-//                .and()
     }
 
     @Override

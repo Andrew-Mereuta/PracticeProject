@@ -3,9 +3,7 @@ package practice.practice.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import practice.practice.objects.User;
 import practice.practice.services.UserService;
 
@@ -13,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/personalPage/")
+@RequestMapping("/personalPage/{id}")
 public class PersonalPageController {
 
     private final UserService userService;
@@ -23,17 +21,19 @@ public class PersonalPageController {
         this.userService = userService;
     }
 
-    @GetMapping("{id}/allUsers")
-    public String getAllUsersOfPlatform(@PathVariable("id") Long id, Model model) {
-        if(userService.findUserById(id) == null) {
-            return "errorPage";
+    @GetMapping("allUsers")
+    public String getAllUsersOfPlatform(@PathVariable("id") Long id, @RequestParam(required = false) String param, Model model) {
+        User user = userService.findUserById(id);
+        if(user == null) {
+            return "redirect:error";
         }
         List<User> users = userService.getAllUsersOfPlatform();
         model.addAttribute("users", users);
+        model.addAttribute("user", user);
         return "personalPage";
     }
 
-    @GetMapping("{id}")
+    @GetMapping
     public String personalPage(@PathVariable("id") Long id, Model model) {
         User user = userService.findUserById(id);
         if(user != null) {
@@ -41,6 +41,6 @@ public class PersonalPageController {
             model.addAttribute("users", new ArrayList<User>());
             return "personalPage";
         }
-        return "errorPage";
+        return "redirect:error";
     }
 }

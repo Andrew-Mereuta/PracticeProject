@@ -36,9 +36,6 @@ public class LoginSuccessUrlConfig implements AuthenticationSuccessHandler {
 
     private String createUrl(UserDetails userDetails) {
         Optional<User> user = userRepository.findUserByEmail(userDetails.getUsername());
-        if(user.isPresent()) {
-            return "personalPage/" + user.get().getId();
-        }
-        return "error";
+        return user.map(value -> "personalPage/" + value.getId()).orElse("error");
     }
 }
